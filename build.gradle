@@ -1,0 +1,18 @@
+group 'com.groovycoder'
+version '0.1-SNAPSHOT'
+
+apply plugin: 'groovy'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
+dependencies {
+    compile group: 'org.spockframework', name: 'spock-core', version: '1.0-groovy-2.4'
+    compile 'com.github.docker-java:docker-java:3.0.6'
+
+    testCompile group: 'cglib', name: 'cglib-nodep', version: '3.2.4'
+}
