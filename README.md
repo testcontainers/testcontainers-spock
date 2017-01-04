@@ -11,7 +11,7 @@ https://github.com/FaustXVI/junit5-docker
 You can use the extension like this:
 
 ```groovy
-@Docker(image = "nginx", ports = @PortBinding("8080:80"))
+@Docker(image = "nginx", ports = ["8080:80"])
 class DockerExtensionIT extends Specification {
    // tests
 }

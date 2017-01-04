@@ -17,9 +17,7 @@ class DockerClientFacadeIT extends Specification {
         given: "a docker container config"
         Docker config = Stub(Docker)
         config.image() >> "emilevauge/whoami"
-        def portBinding = Stub(PortBinding)
-        portBinding.value() >> "8080:80"
-        config.ports() >> [portBinding]
+        config.ports() >> ["8080:80"]
 
         and: "the client facade"
         dockerClientFacade = new DockerClientFacade(config)

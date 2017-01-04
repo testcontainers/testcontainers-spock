@@ -4,7 +4,7 @@ import org.apache.http.client.methods.HttpGet
 import org.apache.http.impl.client.HttpClientBuilder
 import spock.lang.Specification
 
-@Docker(image = "emilevauge/whoami", ports = @PortBinding("8080:80"))
+@Docker(image = "emilevauge/whoami", ports = ["8080:80"])
 class DockerExtensionIT extends Specification {
 
     def "should start accessible docker container"() {

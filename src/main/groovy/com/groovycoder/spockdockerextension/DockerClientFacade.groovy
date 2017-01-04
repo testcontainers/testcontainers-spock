@@ -45,7 +45,7 @@ class DockerClientFacade {
     private void ensureImageExists() {
         try {
             dockerClient.inspectImageCmd(imageConfig.image()).exec()
-        } catch (NotFoundException e) {
+        } catch (NotFoundException ignored) {
             dockerClient.pullImageCmd(imageConfig.image()).exec(new PullImageResultCallback()).awaitSuccess()
         }
     }
@@ -61,12 +61,8 @@ class DockerClientFacade {
 
     List<PortBinding> parsePortBindings() {
         def ports = imageConfig.ports().first()
-
-        return [parsePortBinding(ports)]
+        def parsedBinding = PortBinding.parse(ports)
+        return [parsedBinding]
     }
 
-    private PortBinding parsePortBinding(com.groovycoder.spockdockerextension.PortBinding ports) {
-        def parsedBinding = PortBinding.parse(ports.value())
-        return parsedBinding
-    }
 }

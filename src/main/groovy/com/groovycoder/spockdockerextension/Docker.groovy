@@ -17,6 +17,10 @@ import java.lang.annotation.Target
      */
     String image()
 
-    PortBinding[] ports()
+    /**
+     *
+     * @return port bindings in docker CLI style syntax
+     */
+    String[] ports()
 
 }
