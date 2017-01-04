@@ -12,7 +12,7 @@ class DockerExtensionIT extends Specification {
         def client = HttpClientBuilder.create().build()
 
         when: "accessing web server"
-        def response = client.execute(new HttpGet("http://localhost:8080"))
+        def response = client.execute(new HttpGet("http://localhost:8081"))
 
         then: "docker container is running and returns http status code 200"
         response.statusLine.statusCode == 200
