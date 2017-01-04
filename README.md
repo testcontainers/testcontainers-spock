@@ -1,7 +1,6 @@
 # spock-docker-extension
-[![CircleCI](https://circleci.com/gh/kiview/spock-docker-extension.svg?style=svg)](https://circleci.com/gh/kiview/spock-docker-extension)
-[![Release](https://jitpack.io/v/kiview/spock-docker-extension.svg)]
-(https://jitpack.io/#User/Repo)
+[![Build Status](https://travis-ci.org/kiview/spock-docker-extension.svg?branch=travis)](https://travis-ci.org/kiview/spock-docker-extension)
+[![](https://jitpack.io/v/kiview/spock-docker-extension.svg)](https://jitpack.io/#kiview/spock-docker-extension)
 
 Start docker containers for your Spock tests.
 
@@ -25,9 +24,12 @@ Add the dependency using jitpack.io:
 
 ```gradle
 repositories {
-    maven { url "https://jitpack.io" }
+    mavenCentral()
+    maven { url 'https://jitpack.io' }
 }
+
 dependencies {
-     compile 'com.github.jitpack:gradle-simple:1.0'
+    compile 'com.github.kiview:spock-docker-extension:-SNAPSHOT'
 }
+
 ```
