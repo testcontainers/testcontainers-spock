@@ -1,68 +1,30 @@
 package com.groovycoder.spockdockerextension
 
-import com.github.dockerjava.api.DockerClient
-import com.github.dockerjava.api.exception.InternalServerErrorException
-import com.github.dockerjava.api.exception.NotFoundException
-import com.github.dockerjava.core.DefaultDockerClientConfig
-import com.github.dockerjava.core.DockerClientBuilder
-import com.github.dockerjava.api.model.PortBinding
-import com.github.dockerjava.core.command.PullImageResultCallback
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
+import de.gesellix.docker.client.DockerClient
+import de.gesellix.docker.client.DockerClientImpl
 
 class DockerClientFacade {
 
-    private final Docker imageConfig
-    private final DockerClient dockerClient
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(DockerClientFacade)
-
-    private String id
+    DockerClient dockerClient
+    String image
+    Map clientSpecificContainerConfig
+    def containerStatus
 
     DockerClientFacade(Docker containerConfig) {
-        this.imageConfig = containerConfig
-        dockerClient = initializeClient()
-    }
-
-    private static DockerClient initializeClient() {
-        def clientConfig = DefaultDockerClientConfig.createDefaultConfigBuilder()
-        return DockerClientBuilder.getInstance(clientConfig).build()
+        image = containerConfig.image()
+        dockerClient = new DockerClientImpl()
+        clientSpecificContainerConfig = new DockerContainerConfigBuilder(containerConfig).build()
     }
 
     void startContainer() {
-        def portBindings = parsePortBindings()
-        ensureImageExists()
-        id = createContainer(portBindings)
-        dockerClient.startContainerCmd(id).exec()
-    }
-
-    private String createContainer(List<PortBinding> portBindings) {
-        dockerClient.createContainerCmd(imageConfig.image())
-                .withPortBindings(portBindings)
-                .exec().id
-    }
-
-    private void ensureImageExists() {
-        try {
-            dockerClient.inspectImageCmd(imageConfig.image()).exec()
-        } catch (NotFoundException ignored) {
-            dockerClient.pullImageCmd(imageConfig.image()).exec(new PullImageResultCallback()).awaitSuccess()
-        }
+        containerStatus = dockerClient.run(image, clientSpecificContainerConfig, "latest")
     }
 
     void stopContainer() {
-        dockerClient.stopContainerCmd(id).exec()
-        try {
-            dockerClient.removeContainerCmd(id).exec()
-        } catch(InternalServerErrorException e) {
-            LOGGER.error("error while removing the container", e)
-        }
-    }
+        def id = containerStatus.container.content.Id
 
-    List<PortBinding> parsePortBindings() {
-        def ports = imageConfig.ports().first()
-        def parsedBinding = PortBinding.parse(ports)
-        return [parsedBinding]
+        dockerClient.stop(id)
+        dockerClient.rm(id)
     }
 
 }
