@@ -3,16 +3,17 @@ version '0.1-SNAPSHOT'
 
 apply plugin: 'groovy'
 
-sourceCompatibility = 1.8
-
 repositories {
     mavenLocal()
     mavenCentral()
+    maven { url 'http://dl.bintray.com/gesellix/docker-utils' }
 }
 
 dependencies {
     compile group: 'org.spockframework', name: 'spock-core', version: '1.0-groovy-2.4'
-    compile 'com.github.docker-java:docker-java:3.0.6'
+    compile 'de.gesellix:docker-client:2017-01-02T17-52-31'
 
     testCompile group: 'cglib', name: 'cglib-nodep', version: '3.2.4'
+    testCompile group: 'org.objenesis', name: 'objenesis', version: '2.4'
+    testCompile group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.2'
 }
