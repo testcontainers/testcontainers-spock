@@ -26,6 +26,7 @@ Add the dependency using jitpack.io:
 repositories {
     mavenCentral()
     maven { url 'https://jitpack.io' }
+    maven { url 'http://dl.bintray.com/gesellix/docker-utils' }
 }
 
 dependencies {
