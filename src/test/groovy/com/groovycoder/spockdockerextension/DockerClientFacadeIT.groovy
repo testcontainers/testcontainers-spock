@@ -13,6 +13,10 @@ class DockerClientFacadeIT extends Specification {
     @Shared
     DockerClientFacade dockerClientFacade
 
+    def cleanupSpec() {
+        dockerClientFacade.stopContainer()
+    }
+
     def "should start specified docker container"() {
         given: "a docker container config"
         Docker config = Stub(Docker)
@@ -33,6 +37,11 @@ class DockerClientFacadeIT extends Specification {
 
         then: "docker container is running and returns http status code 200"
         response.statusLine.statusCode == 200
+    }
+
+    def "ip of container is accessible"() {
+        expect:
+        dockerClientFacade.getContainerIp().matches('^(?:[0-9]{1,3}\\.){3}[0-9]{1,3}\$')
     }
 
     def "should stop running docker container"() {
