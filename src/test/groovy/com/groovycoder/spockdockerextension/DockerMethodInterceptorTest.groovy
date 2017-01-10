@@ -1,6 +1,7 @@
 package com.groovycoder.spockdockerextension
 
 import org.spockframework.runtime.extension.IMethodInvocation
+import org.spockframework.runtime.model.SpecInfo
 import spock.lang.Specification
 
 class DockerMethodInterceptorTest extends Specification {
@@ -14,6 +15,9 @@ class DockerMethodInterceptorTest extends Specification {
 
         and: "the method invocation"
         def methodInvocationMock = Mock(IMethodInvocation)
+        def specStub = Stub(SpecInfo)
+        methodInvocationMock.spec >> specStub
+        specStub.allFields >> []
 
         when: "intercepting the spec"
         interceptor.interceptSpecExecution(methodInvocationMock)
