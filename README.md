@@ -15,7 +15,7 @@ class DockerExtensionIT extends Specification {
    // tests
 }
 ```
-You can also specify a field of type `DockerClientFacade` which will be used automatically to inject the facade into the Specification.
+You can also specify a field of type `DockerClientFacade` include a `@Shared` annotation which will be used automatically to inject the facade into the Specification.
 Have a look into the included integration tests to see more examples.
 
 # Usage
