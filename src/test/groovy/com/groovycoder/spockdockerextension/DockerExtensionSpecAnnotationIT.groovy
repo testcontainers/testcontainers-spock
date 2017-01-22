@@ -8,14 +8,10 @@ import spock.lang.Stepwise
 
 @Stepwise
 @Docker(image = "emilevauge/whoami", ports = ["8080:80", "8081:80"])
-class DockerExtensionIT extends Specification {
+class DockerExtensionSpecAnnotationIT extends Specification {
 
     @Shared
     DockerClientFacade dockerClientFacade
-
-    def setup() {
-        println ""
-    }
 
     def "should start accessible docker container"() {
         given: "a http client"
