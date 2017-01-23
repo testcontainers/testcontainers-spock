@@ -23,13 +23,13 @@ class DockerMethodInterceptorTest extends Specification {
         interceptor.interceptSpecExecution(methodInvocationMock)
 
         then: "the container is started"
-        1 * dockerClientMock.startContainer()
+        1 * dockerClientMock.run()
 
         then: "the method is invoked"
         1 * methodInvocationMock.proceed()
 
         then: "the container is stopped"
-        1 * dockerClientMock.stopContainer()
+        1 * dockerClientMock.rm()
     }
 
 }

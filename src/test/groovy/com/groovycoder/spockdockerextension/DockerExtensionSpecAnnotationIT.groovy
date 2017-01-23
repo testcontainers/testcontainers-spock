@@ -33,7 +33,7 @@ class DockerExtensionSpecAnnotationIT extends Specification {
         def client = HttpClientBuilder.create().build()
 
         when: "retrieving the ip of the container"
-        def ip = dockerClientFacade.containerIp
+        def ip = dockerClientFacade.ip
 
         and: "accessing web server"
         def response1 = client.execute(new HttpGet("http://$ip:80"))

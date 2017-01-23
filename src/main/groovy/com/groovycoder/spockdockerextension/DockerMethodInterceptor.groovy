@@ -23,9 +23,9 @@ class DockerMethodInterceptor extends AbstractMethodInterceptor {
 
         injectDockerFacade(invocation)
 
-        dockerClient.startContainer()
+        dockerClient.run()
         invocation.proceed()
-        dockerClient.stopContainer()
+        dockerClient.rm()
     }
 
     private void injectDockerFacade(IMethodInvocation invocation) {

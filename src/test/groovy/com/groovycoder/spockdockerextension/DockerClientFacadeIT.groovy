@@ -19,7 +19,7 @@ class DockerClientFacadeIT extends Specification {
     }
 
     def cleanup() {
-        dockerClientFacade.stopContainer()
+        dockerClientFacade.rm()
     }
 
     def "started container is accessible on configured port"() {
@@ -27,7 +27,7 @@ class DockerClientFacadeIT extends Specification {
         def client = HttpClientBuilder.create().build()
 
         when: "starting the container"
-        dockerClientFacade.startContainer()
+        dockerClientFacade.run()
 
         and: "accessing web server"
         def response = client.execute(new HttpGet("http://localhost:8080"))
@@ -38,21 +38,21 @@ class DockerClientFacadeIT extends Specification {
 
     def "ip of container is accessible"() {
         given: "started container"
-        dockerClientFacade.startContainer()
+        dockerClientFacade.run()
 
         expect:
-        dockerClientFacade.getContainerIp().matches('^(?:[0-9]{1,3}\\.){3}[0-9]{1,3}\$')
+        dockerClientFacade.getIp().matches('^(?:[0-9]{1,3}\\.){3}[0-9]{1,3}\$')
     }
 
-    def "should stop running docker container"() {
+    def "should remove running docker container"() {
         given: "a http client"
         def client = HttpClientBuilder.create().build()
 
         and: "a started container"
-        dockerClientFacade.startContainer()
+        dockerClientFacade.run()
 
         when: "stopping the container"
-        dockerClientFacade.stopContainer()
+        dockerClientFacade.rm()
 
         and: "accessing web server"
         client.execute(new HttpGet("http://localhost:8080"))
