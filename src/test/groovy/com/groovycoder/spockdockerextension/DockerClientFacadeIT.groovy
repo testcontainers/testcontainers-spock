@@ -5,28 +5,25 @@ import org.apache.http.conn.HttpHostConnectException
 import org.apache.http.impl.client.HttpClientBuilder
 import spock.lang.Shared
 import spock.lang.Specification
-import spock.lang.Stepwise
 
-@Stepwise
 class DockerClientFacadeIT extends Specification {
 
     @Shared
     DockerClientFacade dockerClientFacade
 
-    def cleanupSpec() {
-        dockerClientFacade.stopContainer()
-    }
-
-    def "should start specified docker container"() {
-        given: "a docker container config"
+    def setup() {
         Docker config = Stub(Docker)
         config.image() >> "emilevauge/whoami"
         config.ports() >> ["8080:80"]
-
-        and: "the client facade"
         dockerClientFacade = new DockerClientFacade(config)
+    }
 
-        and: "a http client"
+    def cleanup() {
+        dockerClientFacade.stopContainer()
+    }
+
+    def "started container is accessible on configured port"() {
+        given: "a http client"
         def client = HttpClientBuilder.create().build()
 
         when: "starting the container"
@@ -40,6 +37,9 @@ class DockerClientFacadeIT extends Specification {
     }
 
     def "ip of container is accessible"() {
+        given: "started container"
+        dockerClientFacade.startContainer()
+
         expect:
         dockerClientFacade.getContainerIp().matches('^(?:[0-9]{1,3}\\.){3}[0-9]{1,3}\$')
     }
@@ -47,6 +47,9 @@ class DockerClientFacadeIT extends Specification {
     def "should stop running docker container"() {
         given: "a http client"
         def client = HttpClientBuilder.create().build()
+
+        and: "a started container"
+        dockerClientFacade.startContainer()
 
         when: "stopping the container"
         dockerClientFacade.stopContainer()
