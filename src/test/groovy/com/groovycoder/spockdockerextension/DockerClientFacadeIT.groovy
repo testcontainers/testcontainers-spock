@@ -1,7 +1,9 @@
 package com.groovycoder.spockdockerextension
 
+import org.apache.http.client.methods.CloseableHttpResponse
 import org.apache.http.client.methods.HttpGet
 import org.apache.http.conn.HttpHostConnectException
+import org.apache.http.impl.client.CloseableHttpClient
 import org.apache.http.impl.client.HttpClientBuilder
 import spock.lang.Shared
 import spock.lang.Specification
@@ -22,22 +24,22 @@ class DockerClientFacadeIT extends Specification {
         dockerClientFacade.rm()
     }
 
-    def "started container is accessible on configured port"() {
+    def "running container is accessible on configured port"() {
         given: "a http client"
         def client = HttpClientBuilder.create().build()
 
-        when: "starting the container"
+        when: "running the container"
         dockerClientFacade.run()
 
         and: "accessing web server"
-        def response = client.execute(new HttpGet("http://localhost:8080"))
+        def response = testHttpRequest(client)
 
         then: "docker container is running and returns http status code 200"
         response.statusLine.statusCode == 200
     }
 
     def "ip of container is accessible"() {
-        given: "started container"
+        given: "running container"
         dockerClientFacade.run()
 
         expect:
@@ -48,17 +50,47 @@ class DockerClientFacadeIT extends Specification {
         given: "a http client"
         def client = HttpClientBuilder.create().build()
 
+        and: "a running container"
+        dockerClientFacade.run()
+
+        when: "removing the container"
+        dockerClientFacade.rm()
+
+        and: "accessing web server"
+        testHttpRequest(client)
+
+        then: "container is not listening on port"
+        thrown HttpHostConnectException
+    }
+
+    def "can stop container and start it again afterwards"() {
+        given: "a http client"
+        def client = HttpClientBuilder.create().build()
+
         and: "a started container"
         dockerClientFacade.run()
 
         when: "stopping the container"
-        dockerClientFacade.rm()
+        dockerClientFacade.stop()
 
         and: "accessing web server"
-        client.execute(new HttpGet("http://localhost:8080"))
+        testHttpRequest(client)
 
         then: "container is not listening on port"
         thrown HttpHostConnectException
+
+        when: "starting the container again"
+        dockerClientFacade.start()
+
+        and: "accesing web server"
+        def response = testHttpRequest(client)
+
+        then: "docker container is running and returns http status code 200"
+        response.statusLine.statusCode == 200
+    }
+
+    private static CloseableHttpResponse testHttpRequest(CloseableHttpClient client) {
+        client.execute(new HttpGet("http://localhost:8080"))
     }
 
 }

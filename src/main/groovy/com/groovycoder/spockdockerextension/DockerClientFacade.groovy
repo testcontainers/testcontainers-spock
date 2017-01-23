@@ -27,6 +27,14 @@ class DockerClientFacade {
         dockerClient.rm(id)
     }
 
+    void start() {
+        dockerClient.startContainer(id)
+    }
+
+    void stop() {
+        dockerClient.stop(id)
+    }
+
     String getIp() {
         def containerInspection = dockerClient.inspectContainer(id)
         return containerInspection.content.NetworkSettings.Networks.bridge.IPAddress
