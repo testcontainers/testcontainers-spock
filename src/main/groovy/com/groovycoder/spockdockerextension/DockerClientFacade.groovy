@@ -7,11 +7,13 @@ class DockerClientFacade {
 
     DockerClient dockerClient
     String image
+    String name
     Map clientSpecificContainerConfig
     def containerHandle
 
     DockerClientFacade(Docker containerConfig) {
         image = containerConfig.image()
+        name = containerConfig.name()
         dockerClient = new DockerClientImpl()
         clientSpecificContainerConfig = new DockerContainerConfigBuilder(containerConfig).build()
     }

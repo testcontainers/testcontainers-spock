@@ -8,17 +8,17 @@ import spock.lang.Specification
 
 @DockerContainers(
         [
-                @Docker(image = "emilevauge/whoami", ports = ["8000:80"]),
-                @Docker(image = "emilevauge/whoami", ports = ["9000:80"])
+                @Docker(image = "emilevauge/whoami", ports = ["8000:80"], name = "first"),
+                @Docker(image = "emilevauge/whoami", ports = ["9000:80"], name = "second")
         ]
 )
 class DockerContainersExtensionSpecAnnotationIT extends Specification {
 
     @Shared
-    Set<DockerClientFacade> dockerClientFacades = [] as Set
+    Map<String, DockerClientFacade> dockerClientFacades = [:]
 
     @Shared
-    Set genericSet = [] as Set
+    Map<String, String> genericMap = [:]
 
 
     def "should start multiple containers"() {
@@ -36,12 +36,13 @@ class DockerContainersExtensionSpecAnnotationIT extends Specification {
 
     def "container handles are injected into spec"() {
         expect:
-        dockerClientFacades.size() == 2
+        dockerClientFacades.containsKey("first")
+        dockerClientFacades.containsKey("second")
     }
 
     def "container handles are not injected into other collections than set"() {
         expect:
-        genericSet.empty
+        genericMap.isEmpty()
     }
 
 }

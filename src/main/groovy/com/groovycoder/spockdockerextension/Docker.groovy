@@ -18,9 +18,12 @@ import java.lang.annotation.Target
     String image()
 
     /**
-     *
      * @return port bindings in docker CLI style syntax
      */
     String[] ports()
 
+    /**
+     * @return name under which the container is accessible inside the tests (optional)
+     */
+    String name() default ""
 }
