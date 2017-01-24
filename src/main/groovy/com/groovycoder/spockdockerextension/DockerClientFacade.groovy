@@ -20,6 +20,12 @@ class DockerClientFacade {
 
     void run() {
         containerHandle = dockerClient.run(image, clientSpecificContainerConfig, "latest")
+
+        if (!status.success) {
+            throw new DockerRunException("Error running the container: $status.text")
+        }
+
+        containerHandle
     }
 
     void rm() {
@@ -42,5 +48,9 @@ class DockerClientFacade {
 
     private String getId() {
         containerHandle.container.content.Id
+    }
+
+    private getStatus() {
+        containerHandle.status.status
     }
 }

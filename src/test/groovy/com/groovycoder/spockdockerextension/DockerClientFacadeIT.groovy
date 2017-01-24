@@ -89,6 +89,23 @@ class DockerClientFacadeIT extends Specification {
         response.statusLine.statusCode == 200
     }
 
+    def "throws exception if trying to start container and port is already used"() {
+        given: "a running container"
+        dockerClientFacade.run()
+
+        and: "a docker definition with a different image on the same port on which the other container is already running"
+        Docker config = Stub(Docker)
+        config.image() >> "emilevauge/whoami"
+        config.ports() >> ["8080:80"]
+        DockerClientFacade secondClient = new DockerClientFacade(config)
+
+        when: "running this container"
+        secondClient.run()
+
+        then:
+        thrown DockerRunException
+    }
+
     private static CloseableHttpResponse testHttpRequest(CloseableHttpClient client) {
         client.execute(new HttpGet("http://localhost:8080"))
     }

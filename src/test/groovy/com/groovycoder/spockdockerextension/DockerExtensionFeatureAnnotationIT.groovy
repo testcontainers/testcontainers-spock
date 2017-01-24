@@ -2,11 +2,11 @@ package com.groovycoder.spockdockerextension
 
 import org.apache.http.client.methods.HttpGet
 import org.apache.http.impl.client.HttpClientBuilder
+import spock.lang.Ignore
 import spock.lang.Specification
-import spock.lang.Stepwise
 
+@Docker(image = "emilevauge/whoami", ports = ["9090:80"])
 class DockerExtensionFeatureAnnotationIT extends Specification {
-
 
     @Docker(image = "emilevauge/whoami", ports = ["8080:80"])
     def "should start accessible docker container"() {
@@ -40,4 +40,17 @@ class DockerExtensionFeatureAnnotationIT extends Specification {
     }
 
 
+    @Ignore
+    @Docker(image = "foobarkivisaurus", ports = [])
+    def "fails if container image does not exist"() {
+        expect:
+        false
+    }
+
+    @Ignore
+    @Docker(image = "emilevauge/whoami", ports = ["9090:80"], name = "feature")
+    def "fails if port is already bound"() {
+        expect:
+        false
+    }
 }
