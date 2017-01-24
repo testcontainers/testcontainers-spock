@@ -20,9 +20,16 @@ class DockerMethodInterceptor extends AbstractMethodInterceptor {
 
     @Override
     void interceptSpecExecution(IMethodInvocation invocation) throws Throwable {
-
         injectDockerFacade(invocation)
+        wrapInvocationWithDockerRunAndRm(invocation)
+    }
 
+    @Override
+    void interceptFeatureExecution(IMethodInvocation invocation) throws Throwable {
+        wrapInvocationWithDockerRunAndRm(invocation)
+    }
+
+    private void wrapInvocationWithDockerRunAndRm(IMethodInvocation invocation) {
         dockerClient.run()
         invocation.proceed()
         dockerClient.rm()
