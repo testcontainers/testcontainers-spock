@@ -1,25 +1,17 @@
 package com.groovycoder.spockdockerextension
 
 import org.testcontainers.containers.ContainerLaunchException
-import org.testcontainers.containers.GenericContainer
-
-import java.util.concurrent.CompletableFuture
-import java.util.concurrent.Future
+import org.testcontainers.containers.FixedHostPortGenericContainer
 
 class DockerClientFacade {
 
-    GenericContainer dockerClient
-    String image
+    FixedHostPortGenericContainer dockerClient
+    Docker config
     String name
 
     DockerClientFacade(Docker containerConfig) {
-        image = containerConfig.image()
         name = containerConfig.name()
-        def latestImage = "$image:latest"
-
-        Future<String> futureImage = CompletableFuture.completedFuture(latestImage.toString())
-        dockerClient = new GenericContainer(futureImage)
-        dockerClient.setPortBindings(containerConfig.ports().toList())
+        this.config = containerConfig
     }
 
     void run() {
@@ -36,6 +28,13 @@ class DockerClientFacade {
     }
 
     void start() {
+        String image = config.image()
+        String imageWithTag = "$image:latest"
+        dockerClient = new FixedHostPortGenericContainer(imageWithTag)
+        config.ports().each { String portMapping ->
+            def split = portMapping.split(":")
+            dockerClient.withFixedExposedPort(split[0].toInteger(), split[1].toInteger())
+        }
         dockerClient.start()
     }
 
