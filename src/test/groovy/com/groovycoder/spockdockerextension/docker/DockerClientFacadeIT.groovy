@@ -1,5 +1,7 @@
-package com.groovycoder.spockdockerextension
+package com.groovycoder.spockdockerextension.docker
 
+import com.groovycoder.spockdockerextension.Docker
+import com.groovycoder.spockdockerextension.DockerRunException
 import org.apache.http.client.methods.CloseableHttpResponse
 import org.apache.http.client.methods.HttpGet
 import org.apache.http.conn.HttpHostConnectException

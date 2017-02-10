@@ -1,4 +1,4 @@
-package com.groovycoder.spockdockerextension
+package com.groovycoder.spockdockerextension.docker
 
 import org.apache.http.client.methods.HttpGet
 import org.apache.http.conn.HttpHostConnectException
