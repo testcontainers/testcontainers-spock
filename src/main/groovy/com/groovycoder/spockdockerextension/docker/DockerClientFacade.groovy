@@ -1,5 +1,7 @@
-package com.groovycoder.spockdockerextension
+package com.groovycoder.spockdockerextension.docker
 
+import com.groovycoder.spockdockerextension.Docker
+import com.groovycoder.spockdockerextension.DockerRunException
 import org.testcontainers.containers.ContainerLaunchException
 import org.testcontainers.containers.FixedHostPortGenericContainer
 

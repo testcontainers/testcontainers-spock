@@ -1,5 +1,6 @@
 package com.groovycoder.spockdockerextension
 
+import com.groovycoder.spockdockerextension.docker.DockerClientFacade
 import org.apache.http.client.methods.HttpGet
 import org.apache.http.impl.client.HttpClientBuilder
 import spock.lang.Shared

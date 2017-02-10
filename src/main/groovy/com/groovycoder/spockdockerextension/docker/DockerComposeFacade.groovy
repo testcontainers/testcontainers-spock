@@ -1,4 +1,4 @@
-package com.groovycoder.spockdockerextension
+package com.groovycoder.spockdockerextension.docker
 
 import org.testcontainers.containers.DockerComposeContainer
 

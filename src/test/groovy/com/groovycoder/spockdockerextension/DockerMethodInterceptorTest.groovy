@@ -1,5 +1,6 @@
 package com.groovycoder.spockdockerextension
 
+import com.groovycoder.spockdockerextension.docker.DockerClientFacade
 import org.spockframework.runtime.extension.IMethodInvocation
 import org.spockframework.runtime.model.SpecInfo
 import spock.lang.Specification
