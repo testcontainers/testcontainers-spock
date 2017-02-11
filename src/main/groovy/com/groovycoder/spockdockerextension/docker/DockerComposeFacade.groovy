@@ -13,7 +13,6 @@ class DockerComposeFacade {
 
     void up() {
         dockerComposeContainer = new DockerComposeContainer(new File(composeFile))
-                .withLocalCompose(true)
         dockerComposeContainer.starting(null)
     }
 
