@@ -5,7 +5,6 @@ import org.apache.http.impl.client.HttpClientBuilder
 import spock.lang.Ignore
 import spock.lang.Specification
 
-@Docker(image = "emilevauge/whoami", ports = ["9090:80"])
 class DockerExtensionFeatureAnnotationIT extends Specification {
 
     @Docker(image = "emilevauge/whoami", ports = ["8080:80"])
