@@ -6,7 +6,6 @@ import org.spockframework.runtime.model.SpecInfo
 
 class DockerComposeExtension extends AbstractAnnotationDrivenExtension<DockerCompose> {
 
-
     @Override
     void visitFeatureAnnotation(DockerCompose annotation, FeatureInfo feature) {
         feature.addInterceptor(new DockerComposeMethodInterceptor(annotation))
@@ -14,7 +13,11 @@ class DockerComposeExtension extends AbstractAnnotationDrivenExtension<DockerCom
 
     @Override
     void visitSpecAnnotation(DockerCompose annotation, SpecInfo spec) {
-        spec.addInterceptor(new DockerComposeMethodInterceptor(annotation))
-    }
+        def interceptor = new DockerComposeMethodInterceptor(annotation)
+        spec.addSetupInterceptor(interceptor)
+        spec.addCleanupInterceptor(interceptor)
+        spec.addSetupSpecInterceptor(interceptor)
+        spec.addCleanupSpecInterceptor(interceptor)
 
+    }
 }

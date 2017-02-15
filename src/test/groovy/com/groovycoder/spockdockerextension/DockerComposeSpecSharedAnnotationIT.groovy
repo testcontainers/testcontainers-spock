@@ -5,13 +5,15 @@ import org.apache.http.client.methods.HttpGet
 import org.apache.http.impl.client.HttpClientBuilder
 import spock.lang.Shared
 import spock.lang.Specification
+import spock.lang.Stepwise
 import spock.lang.Unroll
 
-@DockerCompose(composeFile = "src/test/resources/docker-compose.yml", exposedServicePorts =
+@DockerCompose(composeFile = "src/test/resources/docker-compose-uptime.yml", exposedServicePorts =
         [
                 @Expose(service = "whoami", port = 80)
-        ], shared = false)
-class DockerComposeSpecAnnotationIT extends Specification {
+        ], shared = true)
+@Stepwise
+class DockerComposeSpecSharedAnnotationIT extends Specification {
 
     @Shared
     Map<String, String> genericMap = [:]
@@ -35,37 +37,35 @@ class DockerComposeSpecAnnotationIT extends Specification {
         response.statusLine.statusCode == 200
     }
 
-    def "instance docker compose facade injected into spec"() {
+    def "instance docker compose facade not injected into spec"() {
         expect:
-        instanceDockerComposeFacade != null
-        instanceDockerComposeFacade.dockerComposeContainer.getServiceHost("whoami_1", 80) != null
+        instanceDockerComposeFacade == null
     }
 
-    def "shared docker compose facade not injected into spec"() {
+    def "shared docker compose facade injected into spec"() {
         expect:
-        sharedDockerComposeFacade == null
+        sharedDockerComposeFacade != null
     }
 
     def "docker compose service can be accessed through DockerComposeContainer"() {
         expect:
-        instanceDockerComposeFacade.dockerComposeContainer.getServiceHost("whoami_1", 80)
+        sharedDockerComposeFacade.dockerComposeContainer.getServiceHost("whoami_1", 80)
     }
 
     def "docker compose service can be accessed through docker compose facade"() {
         expect:
-        instanceDockerComposeFacade.getServiceHost("whoami_1", 80)
+        sharedDockerComposeFacade.getServiceHost("whoami_1", 80)
     }
 
     def "docker compose service can be accessed through docker compose facade when instance is not encoded in the name"() {
         expect:
-        instanceDockerComposeFacade.getServiceHost("whoami", 80)
+        sharedDockerComposeFacade.getServiceHost("whoami", 80)
     }
 
     def "docker compose service can be accessed through docker compose facade when instance is not encoded in the name and the instance is given explicitly"() {
         expect:
-        instanceDockerComposeFacade.getServiceHost("whoami", 80, 1)
+        sharedDockerComposeFacade.getServiceHost("whoami", 80, 1)
     }
-
 
     def "container handles are not injected into other collections than set"() {
         expect:
@@ -83,12 +83,11 @@ class DockerComposeSpecAnnotationIT extends Specification {
         response.statusLine.statusCode == 200
     }
 
-
     @Unroll
-    def "docker compose is restarted between executions (#execution) in not shared mode"() {
+    def "docker compose is not restarted between executions (#execution)"() {
         given:
-        def host = instanceDockerComposeFacade.getServiceHost("whoami", 80)
-        def port = instanceDockerComposeFacade.getServicePort("whoami", 80)
+        def host = sharedDockerComposeFacade.getServiceHost("whoami", 80)
+        def port = sharedDockerComposeFacade.getServicePort("whoami", 80)
         and:
         def client = HttpClientBuilder.create().build()
 
@@ -102,7 +101,7 @@ class DockerComposeSpecAnnotationIT extends Specification {
         response.statusLine.statusCode == 200
 
         currentHost != null
-        currentHost != lastHost
+        currentHost == lastHost || lastHost == null
 
         cleanup:
         lastHost = currentHost
