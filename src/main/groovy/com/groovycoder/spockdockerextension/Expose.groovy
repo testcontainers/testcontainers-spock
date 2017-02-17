@@ -13,7 +13,7 @@ package com.groovycoder.spockdockerextension
     int port()
 
     /**
-     * @return name under which the container is accessible inside the tests (optional)
+     * @return the referenced instance, defaults to 1
      */
     int instance() default 1
 }

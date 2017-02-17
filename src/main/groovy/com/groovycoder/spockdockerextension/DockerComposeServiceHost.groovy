@@ -23,7 +23,7 @@ import java.lang.annotation.Target
     int port()
 
     /**
-     * @return name under which the container is accessible inside the tests (optional)
+     * @return the referenced instance, defaults to 1
      */
     int instance() default 1
 }
