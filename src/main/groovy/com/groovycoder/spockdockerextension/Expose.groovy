@@ -3,12 +3,12 @@ package com.groovycoder.spockdockerextension
 @interface Expose {
 
     /**
-     * @return name of the image to start.
+     * @return name of the service to expose
      */
     String service()
 
     /**
-     * @return port bindings in docker CLI style syntax
+     * @return port to expose
      */
     int port()
 

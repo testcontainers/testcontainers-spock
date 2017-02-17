@@ -17,7 +17,13 @@ import java.lang.annotation.Target
      */
     String composeFile()
 
+    /**
+     * @return services which should be exposed
+     */
     Expose[] exposedServicePorts() default []
 
+    /**
+     * @return true if compose environment should be shared between tests, defaults to false
+     */
     boolean shared() default false
 }
