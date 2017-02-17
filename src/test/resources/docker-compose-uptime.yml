@@ -1,5 +1,8 @@
 version: '2'
 services:
+  uptime:
+    image: usman/docker-uptime
+
   whoami:
     image: emilevauge/whoami
     ports:

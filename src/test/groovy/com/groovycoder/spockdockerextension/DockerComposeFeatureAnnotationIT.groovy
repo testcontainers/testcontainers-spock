@@ -9,7 +9,7 @@ import spock.lang.Stepwise
 @Stepwise
 class DockerComposeFeatureAnnotationIT extends Specification {
 
-    @DockerCompose("src/test/resources/docker-compose.yml")
+    @DockerCompose(composeFile = "src/test/resources/docker-compose.yml")
     def "running compose defined container is accessible on configured port"() {
         given: "a http client"
         def client = HttpClientBuilder.create().build()

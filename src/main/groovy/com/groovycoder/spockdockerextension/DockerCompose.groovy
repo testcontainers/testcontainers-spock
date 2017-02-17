@@ -15,6 +15,9 @@ import java.lang.annotation.Target
     /**
      * @return path to the docker-compose file
      */
-    String value()
+    String composeFile()
 
+    Expose[] exposedServicePorts() default []
+
+    boolean shared() default false
 }
