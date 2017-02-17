@@ -8,12 +8,18 @@ import org.testcontainers.containers.FixedHostPortGenericContainer
 class DockerClientFacade {
 
     FixedHostPortGenericContainer dockerClient
-    Docker config
-    String name
+    final String name
+    final String[] ports
+    final String image
 
     DockerClientFacade(Docker containerConfig) {
         name = containerConfig.name()
-        this.config = containerConfig
+        ports = containerConfig.ports()
+        this.image = concatImageWithDefaultTagIfNeeded(containerConfig.image())
+    }
+
+    private static String concatImageWithDefaultTagIfNeeded(String image) {
+        (image.contains(":")) ? image : image + ":latest"
     }
 
     void run() {
@@ -30,10 +36,8 @@ class DockerClientFacade {
     }
 
     void start() {
-        String image = config.image()
-        String imageWithTag = "$image:latest"
-        dockerClient = new FixedHostPortGenericContainer(imageWithTag)
-        config.ports().each { String portMapping ->
+        dockerClient = new FixedHostPortGenericContainer(image)
+        ports.each { String portMapping ->
             def split = portMapping.split(":")
             dockerClient.withFixedExposedPort(split[0].toInteger(), split[1].toInteger())
         }
