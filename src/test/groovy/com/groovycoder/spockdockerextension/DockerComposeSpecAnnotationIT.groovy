@@ -38,7 +38,6 @@ class DockerComposeSpecAnnotationIT extends Specification {
     def "instance docker compose facade injected into spec"() {
         expect:
         instanceDockerComposeFacade != null
-        instanceDockerComposeFacade.dockerComposeContainer.getServiceHost("whoami_1", 80) != null
     }
 
     def "shared docker compose facade not injected into spec"() {
@@ -85,7 +84,7 @@ class DockerComposeSpecAnnotationIT extends Specification {
 
 
     @Unroll
-    def "docker compose is restarted between executions (#execution) in not shared mode"() {
+    def "docker compose is restarted between executions (#execution) in isolated mode (shared = false)"() {
         given:
         def host = instanceDockerComposeFacade.getServiceHost("whoami", 80)
         def port = instanceDockerComposeFacade.getServicePort("whoami", 80)

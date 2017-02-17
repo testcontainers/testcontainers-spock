@@ -1,7 +1,11 @@
 package com.groovycoder.spockdockerextension
 
 import org.spockframework.runtime.extension.AbstractAnnotationDrivenExtension
+import org.spockframework.runtime.model.FieldInfo
 
 class DockerComposeServiceHostExtension extends AbstractAnnotationDrivenExtension<DockerComposeServiceHost> {
-    // TODO must this exist?
+    @Override
+    void visitFieldAnnotation(DockerComposeServiceHost annotation, FieldInfo field) {
+        // method must be overridden to allow spock access to the annotation
+    }
 }

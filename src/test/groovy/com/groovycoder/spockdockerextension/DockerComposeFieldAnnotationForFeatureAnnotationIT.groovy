@@ -23,24 +23,24 @@ class DockerComposeFieldAnnotationForFeatureAnnotationIT extends Specification {
             [
                     @Expose(service = "whoami", port = 80)
             ])
-    def "shared host is injected"() {
+    def "shared host is not injected when docker compose annotation is present"() {
         expect:
-        sharedWhoamiHost != null
+        sharedWhoamiHost == null
     }
 
     @DockerCompose(composeFile = "src/test/resources/docker-compose.yml", exposedServicePorts =
             [
                     @Expose(service = "whoami", port = 80)
             ])
-    def "shared port is injected"() {
+    def "shared port is not injected when docker compose annotation is present"() {
         expect:
-        sharedWhoamiPort != null
+        sharedWhoamiPort == null
     }
 
     @DockerCompose(composeFile = "src/test/resources/docker-compose.yml", exposedServicePorts =
             [
                     @Expose(service = "whoami", port = 80)
-            ])
+            ], shared = false)
     def "host is injected"() {
         expect:
         whoamiHost != null
@@ -55,14 +55,24 @@ class DockerComposeFieldAnnotationForFeatureAnnotationIT extends Specification {
         whoamiPort != null
     }
 
-    def "host is not injected"() {
+    def "shared host is not injected"() {
         expect:
         sharedWhoamiHost == null
     }
 
-    def "port is not injected"() {
+    def "shared port is not injected"() {
         expect:
         sharedWhoamiPort == null
+    }
+
+    def "host is not injected"() {
+        expect:
+        whoamiHost == null
+    }
+
+    def "port is not injected"() {
+        expect:
+        whoamiPort == null
     }
 
 }
