@@ -2,6 +2,7 @@ package com.groovycoder.spockdockerextension.docker
 
 import com.groovycoder.spockdockerextension.Docker
 import com.groovycoder.spockdockerextension.DockerRunException
+import com.groovycoder.spockdockerextension.Env
 import org.testcontainers.containers.ContainerLaunchException
 import org.testcontainers.containers.FixedHostPortGenericContainer
 
@@ -11,10 +12,12 @@ class DockerClientFacade {
     final String name
     final String[] ports
     final String image
+    final Env[] env
 
     DockerClientFacade(Docker containerConfig) {
         name = containerConfig.name()
         ports = containerConfig.ports()
+        env = containerConfig.env()
         this.image = concatImageWithDefaultTagIfNeeded(containerConfig.image())
     }
 
@@ -41,6 +44,11 @@ class DockerClientFacade {
             def split = portMapping.split(":")
             dockerClient.withFixedExposedPort(split[0].toInteger(), split[1].toInteger())
         }
+
+        env.each { Env e ->
+            dockerClient.withEnv(e.key(), e.value())
+        }
+
         dockerClient.start()
     }
 

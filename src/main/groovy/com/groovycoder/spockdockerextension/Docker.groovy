@@ -23,6 +23,11 @@ import java.lang.annotation.Target
     String[] ports()
 
     /**
+     * @return environment values which will be set inside the container
+     */
+    Env[] env() default []
+
+    /**
      * @return name under which the container is accessible inside the tests (optional)
      */
     String name() default ""

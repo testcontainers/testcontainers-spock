@@ -38,6 +38,21 @@ class DockerExtensionFeatureAnnotationIT extends Specification {
         response2.statusLine.statusCode == 200
     }
 
+    @Docker(image = "kiview/env-info", ports = ["8080:8080"], env =
+            [
+                    @Env(key = "foo", value = "bar")
+            ])
+    def "should set environment variables in container"() {
+        given: "a http client"
+        def client = HttpClientBuilder.create().build()
+
+        when: "accessing web server"
+        def response = client.execute(new HttpGet("http://localhost:8080/env/foo")).entity.content.text
+
+        then: "environment variable is returned"
+        response == "bar"
+    }
+
 
     @Ignore
     @Docker(image = "foobarkivisaurus", ports = [])

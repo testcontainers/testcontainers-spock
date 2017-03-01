@@ -2,6 +2,8 @@ package com.groovycoder.spockdockerextension.docker
 
 import com.groovycoder.spockdockerextension.Docker
 import com.groovycoder.spockdockerextension.DockerRunException
+import com.groovycoder.spockdockerextension.Env
+import groovy.json.JsonSlurper
 import org.apache.http.client.methods.CloseableHttpResponse
 import org.apache.http.client.methods.HttpGet
 import org.apache.http.conn.HttpHostConnectException
@@ -12,22 +14,22 @@ import spock.lang.Specification
 
 class DockerClientFacadeIT extends Specification {
 
+    static final String WHOAMI_IMAGE = "emilevauge/whoami"
+    static final String ENVINFO_IMAGE = "kiview/env-info"
+
     @Shared
     DockerClientFacade dockerClientFacade
 
-    def setup() {
-        Docker config = Stub(Docker)
-        config.image() >> "emilevauge/whoami"
-        config.ports() >> ["8080:80"]
-        dockerClientFacade = new DockerClientFacade(config)
-    }
 
     def cleanup() {
         dockerClientFacade.rm()
     }
 
     def "running container is accessible on configured port"() {
-        given: "a http client"
+        given: "a basic facade"
+        buildWhoamiFacade()
+
+        and: "a http client"
         def client = HttpClientBuilder.create().build()
 
         when: "running the container"
@@ -41,7 +43,10 @@ class DockerClientFacadeIT extends Specification {
     }
 
     def "ip of container is accessible"() {
-        given: "running container"
+        given: "a basic facade"
+        buildWhoamiFacade()
+
+        and: "running container"
         dockerClientFacade.run()
 
         expect:
@@ -49,7 +54,10 @@ class DockerClientFacadeIT extends Specification {
     }
 
     def "should remove running docker container"() {
-        given: "a http client"
+        given: "a basic facade"
+        buildWhoamiFacade()
+
+        and: "a http client"
         def client = HttpClientBuilder.create().build()
 
         and: "a running container"
@@ -66,7 +74,10 @@ class DockerClientFacadeIT extends Specification {
     }
 
     def "can stop container and start it again afterwards"() {
-        given: "a http client"
+        given: "a basic facade"
+        buildWhoamiFacade()
+
+        and: "a http client"
         def client = HttpClientBuilder.create().build()
 
         and: "a started container"
@@ -91,13 +102,50 @@ class DockerClientFacadeIT extends Specification {
         response.statusLine.statusCode == 200
     }
 
+    def "set environment variables inside container"() {
+        given: "some environment variables on the container"
+        Docker config = Stub(Docker)
+        config.image() >> ENVINFO_IMAGE
+        config.ports() >> ["8080:8080"]
+
+        Env fooEnv = Stub(Env)
+        fooEnv.key() >> "foo"
+        fooEnv.value() >> "bar"
+
+        Env dockerEnv = Stub(Env)
+        dockerEnv.key() >> "docker"
+        dockerEnv.value() >> "gopher"
+
+        config.env() >> [fooEnv, dockerEnv]
+        dockerClientFacade = new DockerClientFacade(config)
+
+        when: "running the container"
+        dockerClientFacade.run()
+
+        and: "accessing web server"
+        def response = HttpClientBuilder.create().build().execute(new HttpGet("http://localhost:8080/env/foo"))
+        def foo = response.entity.content.text
+
+        and: "again for another value"
+        response = HttpClientBuilder.create().build().execute(new HttpGet("http://localhost:8080/env/docker"))
+        def docker = response.entity.content.text
+
+        then: "response contains set environment variables"
+        foo == "bar"
+        docker == "gopher"
+    }
+
+
     def "throws exception if trying to start container and port is already used"() {
-        given: "a running container"
+        given: "a basic facade"
+        buildWhoamiFacade()
+
+        and: "a running container"
         dockerClientFacade.run()
 
         and: "a docker definition with a different image on the same port on which the other container is already running"
         Docker config = Stub(Docker)
-        config.image() >> "emilevauge/whoami"
+        config.image() >> WHOAMI_IMAGE
         config.ports() >> ["8080:80"]
         DockerClientFacade secondClient = new DockerClientFacade(config)
 
@@ -106,6 +154,13 @@ class DockerClientFacadeIT extends Specification {
 
         then:
         thrown DockerRunException
+    }
+
+    private void buildWhoamiFacade() {
+        Docker config = Stub(Docker)
+        config.image() >> WHOAMI_IMAGE
+        config.ports() >> ["8080:80"]
+        dockerClientFacade = new DockerClientFacade(config)
     }
 
     private static CloseableHttpResponse testHttpRequest(CloseableHttpClient client) {
