@@ -1,6 +1,6 @@
 # TestContainers-Spock
-[![Build Status](https://travis-ci.org/kiview/spock-docker-extension.svg?branch=travis)](https://travis-ci.org/kiview/spock-docker-extension)
-[![](https://jitpack.io/v/kiview/spock-docker-extension.svg)](https://jitpack.io/#kiview/spock-docker-extension)
+[![Build Status](https://travis-ci.org/testcontainers/testcontainers-spock.svg?branch=master)](https://travis-ci.org/testcontainers/testcontainers-spock)
+[![](https://jitpack.io/v/testcontainers/testcontainers-spock.svg)](https://jitpack.io/#testcontainers/testcontainers-spock)
 
 [Spock](https://github.com/spockframework/spock) extension for [TestContainers](https://github.com/testcontainers/testcontainers-java) library, which allows to use Docker containers inside of Spock tests.
 
@@ -131,7 +131,7 @@ repositories {
 }
 
 dependencies {
-    compile 'com.github.kiview:spock-docker-extension:-SNAPSHOT'
+    compile 'com.github.testcontainers:testcontainers-spock:-SNAPSHOT'
 }
 
 ```
