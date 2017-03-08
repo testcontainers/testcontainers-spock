@@ -92,8 +92,8 @@ Use the `shared` value of the annotation to define is the docker-compose environ
 You can also inject the internal ips and ports of the containers inside the docker network into you test specification.
 
 ```groovy 
- @DockerCompose(composeFile = "src/test/resources/docker-compose-uptime.yml", 
-                exposedServicePorts = [@Expose(service = "whoami", port = 80)], shared = true)
+@DockerCompose(composeFile = "src/test/resources/docker-compose-uptime.yml", 
+               exposedServicePorts = [@Expose(service = "whoami", port = 80)], shared = true)
 class DockerComposeSharedFieldAnnotationIT extends Specification {
 
     @Shared
