@@ -1,6 +1,8 @@
 package com.groovycoder.spockdockerextension
 
 import org.spockframework.runtime.extension.ExtensionAnnotation
+import org.testcontainers.containers.wait.Wait
+import org.testcontainers.containers.wait.WaitStrategy
 
 import java.lang.annotation.ElementType
 import java.lang.annotation.Retention
@@ -31,4 +33,9 @@ import java.lang.annotation.Target
      * @return name under which the container is accessible inside the tests (optional)
      */
     String name() default ""
+
+    /**
+     * @return strategy for determining if container is up and running, default to {@code Wait.defaultWaitStrategy()}
+     */
+    Class<Closure<WaitStrategy>> waitStrategy() default { Wait.defaultWaitStrategy() }
 }

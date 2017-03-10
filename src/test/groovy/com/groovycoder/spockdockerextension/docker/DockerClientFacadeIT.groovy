@@ -3,12 +3,12 @@ package com.groovycoder.spockdockerextension.docker
 import com.groovycoder.spockdockerextension.Docker
 import com.groovycoder.spockdockerextension.DockerRunException
 import com.groovycoder.spockdockerextension.Env
-import groovy.json.JsonSlurper
 import org.apache.http.client.methods.CloseableHttpResponse
 import org.apache.http.client.methods.HttpGet
 import org.apache.http.conn.HttpHostConnectException
 import org.apache.http.impl.client.CloseableHttpClient
 import org.apache.http.impl.client.HttpClientBuilder
+import org.testcontainers.containers.wait.Wait
 import spock.lang.Shared
 import spock.lang.Specification
 
@@ -104,10 +104,6 @@ class DockerClientFacadeIT extends Specification {
 
     def "set environment variables inside container"() {
         given: "some environment variables on the container"
-        Docker config = Stub(Docker)
-        config.image() >> ENVINFO_IMAGE
-        config.ports() >> ["8080:8080"]
-
         Env fooEnv = Stub(Env)
         fooEnv.key() >> "foo"
         fooEnv.value() >> "bar"
@@ -116,7 +112,13 @@ class DockerClientFacadeIT extends Specification {
         dockerEnv.key() >> "docker"
         dockerEnv.value() >> "gopher"
 
-        config.env() >> [fooEnv, dockerEnv]
+        Docker config = new DockerConfigBuilder(
+                image: ENVINFO_IMAGE,
+                ports: ["8080:8080"],
+                env: [fooEnv, dockerEnv],
+                waitStrategy: { Wait.forHttp("/env/foo") }
+        ).build()
+
         dockerClientFacade = new DockerClientFacade(config)
 
         when: "running the container"
@@ -144,10 +146,7 @@ class DockerClientFacadeIT extends Specification {
         dockerClientFacade.run()
 
         and: "a docker definition with a different image on the same port on which the other container is already running"
-        Docker config = Stub(Docker)
-        config.image() >> WHOAMI_IMAGE
-        config.ports() >> ["8080:80"]
-        DockerClientFacade secondClient = new DockerClientFacade(config)
+        DockerClientFacade secondClient = new DockerClientFacade(buildWhoamiConfig())
 
         when: "running this container"
         secondClient.run()
@@ -157,10 +156,12 @@ class DockerClientFacadeIT extends Specification {
     }
 
     private void buildWhoamiFacade() {
-        Docker config = Stub(Docker)
-        config.image() >> WHOAMI_IMAGE
-        config.ports() >> ["8080:80"]
+        Docker config = buildWhoamiConfig()
         dockerClientFacade = new DockerClientFacade(config)
+    }
+
+    private static Docker buildWhoamiConfig() {
+        new DockerConfigBuilder(image: WHOAMI_IMAGE, ports: ["8080:80"]).build()
     }
 
     private static CloseableHttpResponse testHttpRequest(CloseableHttpClient client) {

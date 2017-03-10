@@ -5,6 +5,7 @@ import com.groovycoder.spockdockerextension.DockerRunException
 import com.groovycoder.spockdockerextension.Env
 import org.testcontainers.containers.ContainerLaunchException
 import org.testcontainers.containers.FixedHostPortGenericContainer
+import org.testcontainers.containers.wait.WaitStrategy
 
 class DockerClientFacade {
 
@@ -13,12 +14,14 @@ class DockerClientFacade {
     final String[] ports
     final String image
     final Env[] env
+    WaitStrategy waitStrategy
 
     DockerClientFacade(Docker containerConfig) {
         name = containerConfig.name()
         ports = containerConfig.ports()
         env = containerConfig.env()
         this.image = concatImageWithDefaultTagIfNeeded(containerConfig.image())
+        waitStrategy = ((Closure) containerConfig.waitStrategy().newInstance(this, this))()
     }
 
     private static String concatImageWithDefaultTagIfNeeded(String image) {
@@ -48,6 +51,8 @@ class DockerClientFacade {
         env.each { Env e ->
             dockerClient.withEnv(e.key(), e.value())
         }
+
+        dockerClient.waitingFor(waitStrategy)
 
         dockerClient.start()
     }

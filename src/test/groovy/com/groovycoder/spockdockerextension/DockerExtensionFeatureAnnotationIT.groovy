@@ -2,6 +2,7 @@ package com.groovycoder.spockdockerextension
 
 import org.apache.http.client.methods.HttpGet
 import org.apache.http.impl.client.HttpClientBuilder
+import org.testcontainers.containers.wait.Wait
 import spock.lang.Ignore
 import spock.lang.Specification
 
@@ -41,7 +42,7 @@ class DockerExtensionFeatureAnnotationIT extends Specification {
     @Docker(image = "kiview/env-info", ports = ["8080:8080"], env =
             [
                     @Env(key = "foo", value = "bar")
-            ])
+            ], waitStrategy = { Wait.forHttp("/env/foo")})
     def "should set environment variables in container"() {
         given: "a http client"
         def client = HttpClientBuilder.create().build()
