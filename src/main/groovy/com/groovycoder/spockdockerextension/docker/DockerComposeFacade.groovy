@@ -20,6 +20,7 @@ class DockerComposeFacade {
 
     void up() {
         dockerComposeContainer = new DockerComposeContainer(new File(composeFile))
+                .withLocalCompose(true)
         exposedServiceInstances.each {
             dockerComposeContainer.withExposedService(it.service, it.instance, it.port)
         }
