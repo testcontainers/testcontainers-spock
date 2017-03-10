@@ -15,5 +15,5 @@ dependencies {
     testCompile group: 'cglib', name: 'cglib-nodep', version: '3.2.4'
     testCompile group: 'org.objenesis', name: 'objenesis', version: '2.4'
     testCompile group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.2'
-    testCompile group: 'org.slf4j', name: 'slf4j-log4j12', version: '1.7.22'
+    testCompile group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.1'
 }
