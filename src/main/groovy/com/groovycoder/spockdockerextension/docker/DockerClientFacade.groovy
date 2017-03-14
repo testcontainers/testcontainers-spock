@@ -43,15 +43,10 @@ class DockerClientFacade {
 
     void start() {
         dockerClient = new FixedHostPortGenericContainer(image)
-        List<Integer> exposedPorts = []
         ports.each { String portMapping ->
             def split = portMapping.split(":")
-            def hostPort = split[0].toInteger()
-            def exposedPort = split[1].toInteger()
-            dockerClient.withFixedExposedPort(hostPort, exposedPort)
-            exposedPorts.add(exposedPort)
+            dockerClient.withFixedExposedPort(split[0].toInteger(), split[1].toInteger())
         }
-        dockerClient.withExposedPorts((Integer[]) exposedPorts.toArray())
 
         env.each { Env e ->
             dockerClient.withEnv(e.key(), e.value())
