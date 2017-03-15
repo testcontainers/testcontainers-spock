@@ -20,7 +20,7 @@ class TestcontainersMethodInterceptor extends AbstractMethodInterceptor {
 
     private void startContainers(IMethodInvocation invocation) {
 
-        findContainers(invocation).each { FieldInfo f ->
+        findAllSharedContainers(invocation).each { FieldInfo f ->
             GenericContainer container = readContainerFromField(f, invocation)
             container.start()
         }
@@ -28,7 +28,7 @@ class TestcontainersMethodInterceptor extends AbstractMethodInterceptor {
 
     private void stopContainers(IMethodInvocation invocation) {
 
-        findContainers(invocation).each { FieldInfo f ->
+        findAllSharedContainers(invocation).each { FieldInfo f ->
             GenericContainer container = readContainerFromField(f, invocation)
             container.start()
         }
@@ -38,9 +38,9 @@ class TestcontainersMethodInterceptor extends AbstractMethodInterceptor {
         f.readValue(invocation.instance) as GenericContainer
     }
 
-    private List<FieldInfo> findContainers(IMethodInvocation invocation) {
+    private List<FieldInfo> findAllSharedContainers(IMethodInvocation invocation) {
         invocation.spec.allFields.findAll { FieldInfo f ->
-            f.type == GenericContainer
+            GenericContainer.isAssignableFrom(f.type)
         }
     }
 
