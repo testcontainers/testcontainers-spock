@@ -1,47 +1,75 @@
 package com.groovycoder.spockdockerextension
 
 import org.spockframework.runtime.extension.AbstractMethodInterceptor
+import org.spockframework.runtime.extension.IMethodInterceptor
 import org.spockframework.runtime.extension.IMethodInvocation
 import org.spockframework.runtime.model.FieldInfo
+import org.spockframework.runtime.model.SpecInfo
 import org.testcontainers.containers.GenericContainer
+import spock.lang.Shared
 
 class TestcontainersMethodInterceptor extends AbstractMethodInterceptor {
 
+    private final SpecInfo spec
 
-    TestcontainersMethodInterceptor() {
+    TestcontainersMethodInterceptor(SpecInfo spec) {
+        this.spec = spec
     }
 
     @Override
-    void interceptSpecExecution(IMethodInvocation invocation) throws Throwable {
-        startContainers(invocation)
+    void interceptSetupSpecMethod(IMethodInvocation invocation) throws Throwable {
+        def containers = findAllContainers(true)
+        startContainers(containers, invocation)
         invocation.proceed()
-        stopContainers(invocation)
     }
 
-    private void startContainers(IMethodInvocation invocation) {
+    @Override
+    void interceptCleanupSpecMethod(IMethodInvocation invocation) throws Throwable {
+        def containers = findAllContainers(true)
+        stopContainers(containers, invocation)
+        invocation.proceed()
+    }
 
-        findAllSharedContainers(invocation).each { FieldInfo f ->
+
+    @Override
+    void interceptSetupMethod(IMethodInvocation invocation) throws Throwable {
+        def containers = findAllContainers(false)
+        startContainers(containers, invocation)
+        invocation.proceed()
+    }
+
+    @Override
+    void interceptCleanupMethod(IMethodInvocation invocation) throws Throwable {
+        def containers = findAllContainers(false)
+        stopContainers(containers, invocation)
+        invocation.proceed()
+    }
+
+    private List<FieldInfo> findAllContainers(boolean shared) {
+        spec.allFields.findAll { FieldInfo f ->
+            GenericContainer.isAssignableFrom(f.type) &&  f.isAnnotationPresent(Shared) == shared
+        }
+    }
+
+    private static void startContainers(List<FieldInfo> containers, IMethodInvocation invocation) {
+
+        containers.each { FieldInfo f ->
             GenericContainer container = readContainerFromField(f, invocation)
             container.start()
         }
     }
 
-    private void stopContainers(IMethodInvocation invocation) {
+    private static void stopContainers(List<FieldInfo> containers, IMethodInvocation invocation) {
 
-        findAllSharedContainers(invocation).each { FieldInfo f ->
+        containers.each { FieldInfo f ->
             GenericContainer container = readContainerFromField(f, invocation)
             container.start()
         }
     }
 
-    private GenericContainer readContainerFromField(FieldInfo f, IMethodInvocation invocation) {
+    private static GenericContainer readContainerFromField(FieldInfo f, IMethodInvocation invocation) {
         f.readValue(invocation.instance) as GenericContainer
     }
 
-    private List<FieldInfo> findAllSharedContainers(IMethodInvocation invocation) {
-        invocation.spec.allFields.findAll { FieldInfo f ->
-            GenericContainer.isAssignableFrom(f.type)
-        }
-    }
 
 }

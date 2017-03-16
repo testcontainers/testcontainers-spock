@@ -9,7 +9,11 @@ class TestcontainersExtension extends AbstractAnnotationDrivenExtension<Testcont
 
     @Override
     void visitSpecAnnotation(Testcontainers annotation, SpecInfo spec) {
-        spec.addInterceptor(new TestcontainersMethodInterceptor())
+        def interceptor = new TestcontainersMethodInterceptor(spec)
+        spec.addSetupSpecInterceptor(interceptor)
+        spec.addCleanupSpecInterceptor(interceptor)
+        spec.addSetupInterceptor(interceptor)
+        spec.addCleanupInterceptor(interceptor)
     }
 
 }

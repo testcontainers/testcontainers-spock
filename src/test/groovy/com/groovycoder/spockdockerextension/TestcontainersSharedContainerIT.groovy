@@ -11,16 +11,19 @@ import spock.lang.Stepwise
 
 @Stepwise
 @Testcontainers
-class TestcontainersClassIT extends Specification {
+class TestcontainersSharedContainerIT extends Specification {
 
     @Shared
     GenericContainer genericContainer = new GenericContainer("emilevauge/whoami:latest")
             .withExposedPorts(80)
 
+    @Shared
+    String lastContainerId
 
     def "starts accessible docker container"() {
         given: "a http client"
         def client = HttpClientBuilder.create().build()
+        lastContainerId = genericContainer.containerId
 
         when: "accessing web server"
         CloseableHttpResponse response = performHttpRequest(client)
@@ -30,14 +33,8 @@ class TestcontainersClassIT extends Specification {
     }
 
     def "containers keeps on running between features"() {
-        given: "a http client"
-        def client = HttpClientBuilder.create().build()
-
-        when: "accessing web server"
-        CloseableHttpResponse response = performHttpRequest(client)
-
-        then: "docker container is running and returns http status code 200"
-        response.statusLine.statusCode == 200
+        expect:
+        genericContainer.containerId == lastContainerId
     }
 
     private CloseableHttpResponse performHttpRequest(CloseableHttpClient client) {

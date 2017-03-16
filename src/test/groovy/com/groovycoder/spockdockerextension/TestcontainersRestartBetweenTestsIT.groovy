@@ -1,0 +1,31 @@
+package com.groovycoder.spockdockerextension
+
+import org.testcontainers.containers.GenericContainer
+import spock.lang.Shared
+import spock.lang.Specification
+import spock.lang.Stepwise
+
+@Stepwise
+@Testcontainers
+class TestcontainersRestartBetweenTestsIT extends Specification {
+
+    GenericContainer genericContainer = new GenericContainer("emilevauge/whoami:latest")
+            .withExposedPorts(80)
+
+    @Shared
+    String lastContainerId
+
+    def "retrieving first id"() {
+        when:
+        lastContainerId = genericContainer.containerId
+
+        then:
+        true
+    }
+
+    def "containers is recreated between tests"() {
+        expect:
+        genericContainer.containerId != lastContainerId
+    }
+
+}
