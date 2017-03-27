@@ -7,110 +7,30 @@
 
 # Usage
 
-All annotations can be used on Feature as well as on Specification level.
+## @Testcontainers class-annotation
 
-## @Docker
-
-You can use the annotation like this:
-
-```groovy
-@Docker(image = "nginx", ports = ["8080:80"])
-class DockerExtensionIT extends Specification {
-   // tests
-}
-```
-
-You can also specify a field of type `DockerClientFacade` including a `@Shared` annotation which will be used automatically to inject the facade into the Specification.
-Have a look into the included integration tests to see more examples.
-
-
-## @DockerContainers
-
-The `@DockerContainers` annotation can be used to define multiple containers.
+Specifying the `@Testcontainers` annotation will instruct Spock to start and stop all testcontainers accordingly. This annotation 
+can be mixed with Spock's `@Shared` annotation to indicate, that containers shouldn't be restarted between tests.
 
 ```groovy
-@DockerContainers(
-        [
-                @Docker(image = "emilevauge/whoami", ports = ["8000:80"], name = "first"),
-                @Docker(image = "emilevauge/whoami", ports = ["9000:80"], name = "second")
-        ]
-)
-class DockerContainersExtensionSpecAnnotationIT extends Specification {
+@Testcontainers
+class TestcontainersSharedContainerIT extends Specification {
 
     @Shared
-    Map<String, DockerClientFacade> dockerClientFacades = [:]
+    GenericContainer genericContainer = new GenericContainer("emilevauge/whoami:latest")
+            .withExposedPorts(80)
 
-
-    def "should start multiple containers"() {
+    def "starts accessible docker container"() {
         given: "a http client"
         def client = HttpClientBuilder.create().build()
+        lastContainerId = genericContainer.containerId
 
         when: "accessing web server"
-        def response1 = client.execute(new HttpGet("http://localhost:9000"))
-        def response2 = client.execute(new HttpGet("http://localhost:8000"))
+        CloseableHttpResponse response = performHttpRequest(client)
 
         then: "docker container is running and returns http status code 200"
-        response1.statusLine.statusCode == 200
-        response2.statusLine.statusCode == 200
-    }  
-}
-```
-
-## @DockerCompose
-
-The `@DockerCompose` annotation can be used with regular `docker-compose.yml` files and should work even if docker-compose isn't installed locally.
-Use the `shared` value of the annotation to define is the docker-compose environment should be shared between test runs. 
-
-```groovy
- @DockerCompose(composeFile = "src/test/resources/docker-compose-uptime.yml", 
-                exposedServicePorts = [@Expose(service = "whoami", port = 80)], shared = true)
- @Stepwise
- class DockerComposeSpecSharedAnnotationIT extends Specification {
-
- 
-     @Shared
-     DockerComposeFacade sharedDockerComposeFacade
- 
-     DockerComposeFacade instanceDockerComposeFacade
- 
-     @Shared
-     String lastHost
- 
-     def "running compose defined container is accessible on configured port"() {
-         given: "a http client"
-         def client = HttpClientBuilder.create().build()
- 
-         when: "accessing web server"
-         def response = client.execute(new HttpGet("http://localhost:8080"))
- 
-         then: "docker container is running and returns http status code 200"
-         response.statusLine.statusCode == 200
-     }
-}
-```
-
-You can also inject the internal ips and ports of the containers inside the docker network into you test specification.
-
-```groovy 
-@DockerCompose(composeFile = "src/test/resources/docker-compose-uptime.yml", 
-               exposedServicePorts = [@Expose(service = "whoami", port = 80)], shared = true)
-class DockerComposeSharedFieldAnnotationIT extends Specification {
-
-    @Shared
-    @DockerComposeServiceHost(service = "whoami", port = 80)
-    String sharedWhoamiHost
-
-    @Shared
-    @DockerComposeServicePort(service = "whoami", port = 80)
-    Integer sharedWhoamiPort
-
-    @DockerComposeServiceHost(service = "whoami", port = 80)
-    String whoamiHost
-
-    @DockerComposeServicePort(service = "whoami", port = 80)
-    Integer whoamiPort
-
-    ...
+        response.statusLine.statusCode == 200
+    }
 }
 ```
 
