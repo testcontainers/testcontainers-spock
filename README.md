@@ -14,22 +14,32 @@ can be mixed with Spock's `@Shared` annotation to indicate, that containers shou
 
 ```groovy
 @Testcontainers
-class TestcontainersSharedContainerIT extends Specification {
+class DatabaseTest extends Specification {
 
     @Shared
-    GenericContainer genericContainer = new GenericContainer("emilevauge/whoami:latest")
-            .withExposedPorts(80)
+    PostgreSQLContainer postgreSQLContainer = new PostgreSQLContainer()
+            .withDatabaseName("foo")
+            .withUsername("foo")
+            .withPassword("secret")
 
-    def "starts accessible docker container"() {
-        given: "a http client"
-        def client = HttpClientBuilder.create().build()
-        lastContainerId = genericContainer.containerId
+    def "database is accessible"() {
 
-        when: "accessing web server"
-        CloseableHttpResponse response = performHttpRequest(client)
+        given: "a jdbc connection"
+        HikariConfig hikariConfig = new HikariConfig()
+        hikariConfig.setJdbcUrl(postgreSQLContainer.jdbcUrl)
+        hikariConfig.setUsername("foo")
+        hikariConfig.setPassword("secret")
+        HikariDataSource ds = new HikariDataSource(hikariConfig)
 
-        then: "docker container is running and returns http status code 200"
-        response.statusLine.statusCode == 200
+        when: "querying the database"
+        Statement statement = ds.getConnection().createStatement()
+        statement.execute("SELECT 1")
+        ResultSet resultSet = statement.getResultSet()
+        resultSet.next()
+
+        then: "result is returned"
+        int resultSetInt = resultSet.getInt(1)
+        resultSetInt == 1
     }
 }
 ```
