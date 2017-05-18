@@ -10,7 +10,7 @@ repositories {
 
 dependencies {
     compile group: 'org.spockframework', name: 'spock-core', version: '1.0-groovy-2.4'
-    compile 'org.testcontainers:testcontainers:1.2.0'
+    compile 'org.testcontainers:testcontainers:1.2.1'
 
     testCompile group: 'cglib', name: 'cglib-nodep', version: '3.2.4'
     testCompile group: 'org.objenesis', name: 'objenesis', version: '2.4'
