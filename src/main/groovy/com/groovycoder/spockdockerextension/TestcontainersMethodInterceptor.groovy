@@ -85,7 +85,7 @@ class TestcontainersMethodInterceptor extends AbstractMethodInterceptor {
 
         containers.each { FieldInfo f ->
             GenericContainer container = readContainerFromField(f, invocation)
-            container.start()
+            container.stop()
         }
     }
 

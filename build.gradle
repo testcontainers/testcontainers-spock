@@ -22,6 +22,8 @@ dependencies {
     testCompile group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.1'
     testCompile 'com.zaxxer:HikariCP:2.6.1'
     testCompile group: 'org.testcontainers', name: 'postgresql', version: testcontainersVersion
+    testCompile group: 'org.testcontainers', name: 'mysql', version: testcontainersVersion
 
     testRuntime group: 'org.postgresql', name: 'postgresql', version: '42.0.0'
+    testRuntime group: 'mysql', name: 'mysql-connector-java', version: '6.0.6'
 }
