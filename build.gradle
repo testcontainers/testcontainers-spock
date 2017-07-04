@@ -13,17 +13,17 @@ repositories {
 }
 
 dependencies {
-    compile group: 'org.spockframework', name: 'spock-core', version: '1.0-groovy-2.4'
+    compile 'org.spockframework:spock-core:1.0-groovy-2.4'
     compile "org.testcontainers:testcontainers:$testcontainersVersion"
 
-    testCompile group: 'cglib', name: 'cglib-nodep', version: '3.2.4'
-    testCompile group: 'org.objenesis', name: 'objenesis', version: '2.4'
-    testCompile group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.2'
-    testCompile group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.1'
+    testCompile 'cglib:cglib-nodep:3.2.4'
+    testCompile 'org.objenesis:objenesis:2.4'
+    testCompile 'org.apache.httpcomponents:httpclient:4.5.2'
+    testCompile 'ch.qos.logback:logback-classic:1.2.1'
     testCompile 'com.zaxxer:HikariCP:2.6.1'
-    testCompile group: 'org.testcontainers', name: 'postgresql', version: testcontainersVersion
-    testCompile group: 'org.testcontainers', name: 'mysql', version: testcontainersVersion
+    testCompile "org.testcontainers:postgresql:$testcontainersVersion"
+    testCompile "org.testcontainers:mysql:$testcontainersVersion"
 
-    testRuntime group: 'org.postgresql', name: 'postgresql', version: '42.0.0'
-    testRuntime group: 'mysql', name: 'mysql-connector-java', version: '6.0.6'
+    testRuntime 'org.postgresql:postgresql:42.0.0'
+    testRuntime 'mysql:mysql-connector-java:6.0.6'
 }
