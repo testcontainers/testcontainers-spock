@@ -89,20 +89,20 @@ class TestcontainersMethodInterceptor extends AbstractMethodInterceptor {
 
     private static void startComposeContainers(List<FieldInfo> compose, IMethodInvocation invocation) {
         compose.each { FieldInfo f ->
-            DockerComposeContainer c = readContainerFromField(f, invocation)
+            DockerComposeContainer c = f.readValue(invocation.instance) as DockerComposeContainer
             c.starting(null)
         }
     }
 
     private static void stopComposeContainers(List<FieldInfo> compose, IMethodInvocation invocation) {
         compose.each { FieldInfo f ->
-            DockerComposeContainer c = readContainerFromField(f, invocation)
+            DockerComposeContainer c = f.readValue(invocation.instance) as DockerComposeContainer
             c.finished(null)
         }
     }
 
 
-    private static <T extends GenericContainer> T readContainerFromField(FieldInfo f, IMethodInvocation invocation) {
-        f.readValue(invocation.instance) as T
+    private static GenericContainer readContainerFromField(FieldInfo f, IMethodInvocation invocation) {
+        f.readValue(invocation.instance) as GenericContainer
     }
 }
