@@ -1,13 +1,11 @@
 package com.groovycoder.spockdockerextension
 
 import org.spockframework.runtime.extension.AbstractMethodInterceptor
-import org.spockframework.runtime.extension.IMethodInterceptor
 import org.spockframework.runtime.extension.IMethodInvocation
 import org.spockframework.runtime.model.FieldInfo
 import org.spockframework.runtime.model.SpecInfo
 import org.testcontainers.containers.DockerComposeContainer
 import org.testcontainers.containers.GenericContainer
-import spock.lang.Shared
 
 class TestcontainersMethodInterceptor extends AbstractMethodInterceptor {
 
@@ -74,15 +72,15 @@ class TestcontainersMethodInterceptor extends AbstractMethodInterceptor {
     }
 
     private static void startContainers(List<FieldInfo> containers, IMethodInvocation invocation) {
-
         containers.each { FieldInfo f ->
             GenericContainer container = readContainerFromField(f, invocation)
-            container.start()
+            if(!container.isRunning()){
+                container.start()
+            }
         }
     }
 
     private static void stopContainers(List<FieldInfo> containers, IMethodInvocation invocation) {
-
         containers.each { FieldInfo f ->
             GenericContainer container = readContainerFromField(f, invocation)
             container.stop()
@@ -91,22 +89,20 @@ class TestcontainersMethodInterceptor extends AbstractMethodInterceptor {
 
     private static void startComposeContainers(List<FieldInfo> compose, IMethodInvocation invocation) {
         compose.each { FieldInfo f ->
-            DockerComposeContainer c = f.readValue(invocation.instance) as DockerComposeContainer
+            DockerComposeContainer c = readContainerFromField(f, invocation)
             c.starting(null)
         }
     }
 
     private static void stopComposeContainers(List<FieldInfo> compose, IMethodInvocation invocation) {
         compose.each { FieldInfo f ->
-            DockerComposeContainer c = f.readValue(invocation.instance) as DockerComposeContainer
+            DockerComposeContainer c = readContainerFromField(f, invocation)
             c.finished(null)
         }
     }
 
 
-    private static GenericContainer readContainerFromField(FieldInfo f, IMethodInvocation invocation) {
-        f.readValue(invocation.instance) as GenericContainer
+    private static <T extends GenericContainer> T readContainerFromField(FieldInfo f, IMethodInvocation invocation) {
+        f.readValue(invocation.instance) as T
     }
-
-
 }
