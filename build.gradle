@@ -2,7 +2,7 @@ group 'com.groovycoder'
 version '0.1-SNAPSHOT'
 
 ext {
-    testcontainersVersion = '1.4.1'
+    testcontainersVersion = '1.4.2'
 }
 
 apply plugin: 'groovy'

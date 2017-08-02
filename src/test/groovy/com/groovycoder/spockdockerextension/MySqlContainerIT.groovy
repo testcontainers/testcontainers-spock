@@ -19,7 +19,7 @@ class MySqlContainerIT extends Specification {
 
     def "dummy test"() {
         expect:
-        true
+        mySQLContainer.isRunning()
     }
 
 
