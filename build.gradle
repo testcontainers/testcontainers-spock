@@ -6,10 +6,37 @@ ext {
 }
 
 apply plugin: 'groovy'
+apply plugin: 'maven-publish'
+apply plugin: 'maven'
 
 repositories {
     mavenLocal()
     mavenCentral()
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+        }
+    }
+
+}
+
+if (project.hasProperty('nexusUrl')) {
+    uploadArchives {
+        repositories {
+            mavenDeployer {
+                repository(url: "${nexusUrl}/repository/maven-releases/") {
+                    authentication(userName: nexusUsername, password: nexusPassword)
+                }
+                snapshotRepository(url: "${nexusUrl}/repository/maven-snapshots") {
+                    authentication(userName: nexusUsername, password: nexusPassword)
+                }
+            }
+        }
+
+    }
 }
 
 dependencies {
