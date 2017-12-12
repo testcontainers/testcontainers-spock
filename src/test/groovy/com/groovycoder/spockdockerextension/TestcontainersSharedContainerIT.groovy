@@ -14,7 +14,7 @@ import spock.lang.Stepwise
 class TestcontainersSharedContainerIT extends Specification {
 
     @Shared
-    GenericContainer genericContainer = new GenericContainer("emilevauge/whoami:latest")
+    GenericContainer genericContainer = new GenericContainer("httpd:2.4-alpine")
             .withExposedPorts(80)
 
     @Shared
