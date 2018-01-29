@@ -61,7 +61,10 @@ repositories {
 }
 
 dependencies {
-    compile 'com.github.testcontainers:testcontainers-spock:-SNAPSHOT'
+    testCompile 'com.github.testcontainers:testcontainers-spock:-SNAPSHOT'
+    
+    // or with a tagged release
+    testCompile 'com.github.testcontainers:testcontainers-spock:1.0.0-tc1.6.0'
 }
 
 ```
