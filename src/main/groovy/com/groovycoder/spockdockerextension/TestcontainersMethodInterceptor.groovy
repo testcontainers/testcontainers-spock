@@ -26,6 +26,7 @@ class TestcontainersMethodInterceptor extends AbstractMethodInterceptor {
         invocation.proceed()
     }
 
+    @Override
     void interceptCleanupSpecMethod(IMethodInvocation invocation) throws Throwable {
         def containers = findAllContainers(true)
         stopContainers(containers, invocation)
@@ -74,7 +75,7 @@ class TestcontainersMethodInterceptor extends AbstractMethodInterceptor {
     private static void startContainers(List<FieldInfo> containers, IMethodInvocation invocation) {
         containers.each { FieldInfo f ->
             GenericContainer container = readContainerFromField(f, invocation)
-            if(!container.isRunning()){
+            if (!container.isRunning()) {
                 container.start()
             }
         }
@@ -100,7 +101,6 @@ class TestcontainersMethodInterceptor extends AbstractMethodInterceptor {
             c.finished(null)
         }
     }
-
 
     private static GenericContainer readContainerFromField(FieldInfo f, IMethodInvocation invocation) {
         f.readValue(invocation.instance) as GenericContainer
