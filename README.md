@@ -1,3 +1,5 @@
+# __DEPRECATED!__ This module has been integrated in the main Testcontainers repository (see https://github.com/testcontainers/testcontainers-java/tree/master/modules/spock)
+
 # TestContainers-Spock
 [![Build Status](https://travis-ci.org/testcontainers/testcontainers-spock.svg?branch=master)](https://travis-ci.org/testcontainers/testcontainers-spock)
 [![](https://jitpack.io/v/testcontainers/testcontainers-spock.svg)](https://jitpack.io/#testcontainers/testcontainers-spock)
